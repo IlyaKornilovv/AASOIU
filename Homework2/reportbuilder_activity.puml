@@ -1,0 +1,24 @@
+@startuml
+start
+:Создать ReportBuilder;
+:Указать SQL-запрос Query(...);
+:Указать Title(...);
+:Указать Header(...);
+:Указать ColumnWidths(...);
+
+if (Нужна нумерация?) then (да)
+  :Numbered();
+endif
+
+if (Нужен итог?) then (да)
+  :Footer(...);
+endif
+
+:Build()/Print();
+
+if (Сохранить отчёт?) then (да)
+  :SaveToFile(path);
+endif
+
+stop
+@enduml
