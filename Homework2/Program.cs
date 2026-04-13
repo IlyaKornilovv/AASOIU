@@ -1,78 +1,18 @@
 using System.Text;
-using Microsoft.Data.Sqlite;
 
 Console.OutputEncoding = Encoding.UTF8;
 Console.InputEncoding = Encoding.UTF8;
 
-string baseDir = AppContext.BaseDirectory;
-string dbPath = Path.Combine(baseDir, "teachers.db");
-string chairCsv = Path.Combine(baseDir, "chair.csv");
-string teacherCsv = Path.Combine(baseDir, "teacher.csv");
-string reportsDir = Path.Combine(baseDir, "reports");
+string dbPath = "teachers.db";
+string chairCsv = Path.Combine(AppContext.BaseDirectory, "chair.csv");
+string teacherCsv = Path.Combine(AppContext.BaseDirectory, "teacher.csv");
 
 var db = new DatabaseManager(dbPath);
 db.InitializeDatabase(chairCsv, teacherCsv);
+Console.WriteLine();
 
-RunMainMenu(db, reportsDir);
-
-static void RunMainMenu(DatabaseManager db, string reportsDir)
-{
-    string choice;
-    do
-    {
-        Console.Clear();
-        PrintMainMenu();
-
-        Console.Write("Ваш выбор: ");
-        choice = Console.ReadLine()?.Trim() ?? string.Empty;
-        Console.WriteLine();
-
-        switch (choice)
-        {
-            case "1":
-                ShowChairs(db);
-                Pause();
-                break;
-            case "2":
-                ShowTeachers(db);
-                Pause();
-                break;
-            case "3":
-                AddTeacher(db);
-                Pause();
-                break;
-            case "4":
-                EditTeacher(db);
-                Pause();
-                break;
-            case "5":
-                DeleteTeacher(db);
-                Pause();
-                break;
-            case "6":
-                ReportsMenu(db, reportsDir);
-                break;
-            case "7":
-                FilterByChair(db);
-                Pause();
-                break;
-            case "8":
-                ExportCsv(db);
-                Pause();
-                break;
-            case "0":
-                Console.WriteLine("До свидания!");
-                break;
-            default:
-                Console.WriteLine("Неверный пункт меню.");
-                Pause();
-                break;
-        }
-    }
-    while (choice != "0");
-}
-
-static void PrintMainMenu()
+string choice;
+do
 {
     Console.WriteLine("╔══════════════════════════════════════════════╗");
     Console.WriteLine("║ УПРАВЛЕНИЕ ПРЕПОДАВАТЕЛЯМИ                  ║");
@@ -87,22 +27,34 @@ static void PrintMainMenu()
     Console.WriteLine("║ 8 — Экспорт в CSV [дополнительно]           ║");
     Console.WriteLine("║ 0 — Выход                                   ║");
     Console.WriteLine("╚══════════════════════════════════════════════╝");
+    Console.Write("Ваш выбор: ");
+    choice = Console.ReadLine()?.Trim() ?? "";
+    Console.WriteLine();
+
+    switch (choice)
+    {
+        case "1": ShowChairs(db); break;
+        case "2": ShowTeachers(db); break;
+        case "3": AddTeacher(db); break;
+        case "4": EditTeacher(db); break;
+        case "5": DeleteTeacher(db); break;
+        case "6": ReportsMenu(db); break;
+        case "7": FilterByChair(db); break;
+        case "8": ExportCsv(db); break;
+        case "0": Console.WriteLine("До свидания!"); break;
+        default: Console.WriteLine("Неверный пункт меню."); break;
+    }
+
+    Console.WriteLine();
 }
+while (choice != "0");
 
 static void ShowChairs(DatabaseManager db)
 {
     Console.WriteLine("--- Все кафедры ---");
     var chairs = db.GetAllChairs();
-
-    if (chairs.Count == 0)
-    {
-        Console.WriteLine("Список кафедр пуст.");
-        return;
-    }
-
     foreach (var chair in chairs)
         Console.WriteLine(" " + chair);
-
     Console.WriteLine($"Итого: {chairs.Count}");
 }
 
@@ -110,43 +62,46 @@ static void ShowTeachers(DatabaseManager db)
 {
     Console.WriteLine("--- Все преподаватели ---");
     var teachers = db.GetAllTeachers();
-
-    if (teachers.Count == 0)
-    {
-        Console.WriteLine("Список преподавателей пуст.");
-        return;
-    }
-
     foreach (var teacher in teachers)
         Console.WriteLine(" " + teacher);
-
     Console.WriteLine($"Итого: {teachers.Count}");
 }
 
 static void AddTeacher(DatabaseManager db)
 {
     Console.WriteLine("--- Добавление преподавателя ---");
-    PrintChairsForSelection(db);
+    Console.WriteLine("Доступные кафедры:");
+    var chairs = db.GetAllChairs();
+    foreach (var chair in chairs)
+        Console.WriteLine(" " + chair);
 
-    int chairId = ReadInt("ID кафедры: ");
-    if (!db.ChairExists(chairId))
+    Console.Write("ID кафедры: ");
+    if (!int.TryParse(Console.ReadLine(), out int chairId))
     {
-        Console.WriteLine("Ошибка: кафедра с таким ID не существует.");
+        Console.WriteLine("Ошибка: введите целое число.");
         return;
     }
 
-    string name = ReadRequiredString("Имя преподавателя: ");
-    int publications = ReadInt("Количество публикаций: ", minValue: 0);
+    Console.Write("Имя преподавателя: ");
+    string name = Console.ReadLine()?.Trim() ?? "";
+    if (name.Length == 0)
+    {
+        Console.WriteLine("Ошибка: имя не может быть пустым.");
+        return;
+    }
+
+    Console.Write("Количество публикаций: ");
+    if (!int.TryParse(Console.ReadLine(), out int publications))
+    {
+        Console.WriteLine("Ошибка: введите целое число.");
+        return;
+    }
 
     try
     {
         var teacher = new Teacher(0, chairId, name, publications);
         db.AddTeacher(teacher);
         Console.WriteLine("Преподаватель добавлен.");
-    }
-    catch (SqliteException ex)
-    {
-        Console.WriteLine($"Ошибка SQLite: {ex.Message}");
     }
     catch (ArgumentException ex)
     {
@@ -157,10 +112,15 @@ static void AddTeacher(DatabaseManager db)
 static void EditTeacher(DatabaseManager db)
 {
     Console.WriteLine("--- Редактирование преподавателя ---");
-    int id = ReadInt("Введите ID преподавателя: ");
+    Console.Write("Введите ID преподавателя: ");
+    if (!int.TryParse(Console.ReadLine(), out int id))
+    {
+        Console.WriteLine("Ошибка: введите целое число.");
+        return;
+    }
 
     var teacher = db.GetTeacherById(id);
-    if (teacher is null)
+    if (teacher == null)
     {
         Console.WriteLine($"Преподаватель с ID={id} не найден.");
         return;
@@ -170,39 +130,19 @@ static void EditTeacher(DatabaseManager db)
     Console.WriteLine("(нажмите Enter, чтобы оставить значение без изменений)");
 
     Console.Write($"Имя [{teacher.Name}]: ");
-    string input = Console.ReadLine()?.Trim() ?? string.Empty;
-    if (!string.IsNullOrWhiteSpace(input))
+    string input = Console.ReadLine()?.Trim() ?? "";
+    if (input.Length > 0)
         teacher.Name = input;
 
     Console.Write($"ID кафедры [{teacher.ChairId}]: ");
-    input = Console.ReadLine()?.Trim() ?? string.Empty;
-    if (!string.IsNullOrWhiteSpace(input))
-    {
-        if (!int.TryParse(input, out int newChairId))
-        {
-            Console.WriteLine("Ошибка: ID кафедры должен быть целым числом.");
-            return;
-        }
-
-        if (!db.ChairExists(newChairId))
-        {
-            Console.WriteLine("Ошибка: кафедра с таким ID не существует.");
-            return;
-        }
-
+    input = Console.ReadLine()?.Trim() ?? "";
+    if (input.Length > 0 && int.TryParse(input, out int newChairId))
         teacher.ChairId = newChairId;
-    }
 
     Console.Write($"Публикации [{teacher.Publications}]: ");
-    input = Console.ReadLine()?.Trim() ?? string.Empty;
-    if (!string.IsNullOrWhiteSpace(input))
+    input = Console.ReadLine()?.Trim() ?? "";
+    if (input.Length > 0 && int.TryParse(input, out int newPublications))
     {
-        if (!int.TryParse(input, out int newPublications))
-        {
-            Console.WriteLine("Ошибка: количество публикаций должно быть целым числом.");
-            return;
-        }
-
         try
         {
             teacher.Publications = newPublications;
@@ -214,235 +154,144 @@ static void EditTeacher(DatabaseManager db)
         }
     }
 
-    bool updated = db.UpdateTeacher(teacher);
-    Console.WriteLine(updated ? "Данные обновлены." : "Запись не обновлена.");
+    db.UpdateTeacher(teacher);
+    Console.WriteLine("Данные обновлены.");
 }
 
 static void DeleteTeacher(DatabaseManager db)
 {
     Console.WriteLine("--- Удаление преподавателя ---");
-    int id = ReadInt("Введите ID преподавателя: ");
+    Console.Write("Введите ID преподавателя: ");
+    if (!int.TryParse(Console.ReadLine(), out int id))
+    {
+        Console.WriteLine("Ошибка: введите целое число.");
+        return;
+    }
 
     var teacher = db.GetTeacherById(id);
-    if (teacher is null)
+    if (teacher == null)
     {
         Console.WriteLine($"Преподаватель с ID={id} не найден.");
         return;
     }
 
-    Console.WriteLine($"Найдена запись: {teacher}");
-    Console.Write("Удалить этого преподавателя? (да/нет): ");
-    string confirm = (Console.ReadLine() ?? string.Empty).Trim().ToLowerInvariant();
-
-    if (confirm != "да")
+    Console.Write($"Удалить «{teacher.Name}»? (да/нет): ");
+    string confirm = Console.ReadLine()?.Trim().ToLower() ?? "";
+    if (confirm == "да")
+    {
+        db.DeleteTeacher(id);
+        Console.WriteLine("Преподаватель удалён.");
+    }
+    else
     {
         Console.WriteLine("Удаление отменено.");
-        return;
     }
-
-    bool deleted = db.DeleteTeacher(id);
-    Console.WriteLine(deleted ? "Преподаватель удалён." : "Удаление не выполнено.");
 }
 
-static void ReportsMenu(DatabaseManager db, string reportsDir)
+static void ReportsMenu(DatabaseManager db)
 {
     string choice;
     do
     {
-        Console.Clear();
         Console.WriteLine("--- Отчёты ---");
         Console.WriteLine(" 1 — Преподаватели по кафедрам");
         Console.WriteLine(" 2 — Количество преподавателей по кафедрам");
         Console.WriteLine(" 3 — Среднее число публикаций по кафедрам");
         Console.WriteLine(" 0 — Назад");
         Console.Write("Ваш выбор: ");
-        choice = Console.ReadLine()?.Trim() ?? string.Empty;
-        Console.WriteLine();
+        choice = Console.ReadLine()?.Trim() ?? "";
 
         switch (choice)
         {
-            case "1":
-                ShowAndMaybeSaveReport(
-                    BuildReport1_TeachersWithChairs(db),
-                    Path.Combine(reportsDir, "report_teachers_with_chairs.txt"));
-                Pause();
-                break;
-
-            case "2":
-                ShowAndMaybeSaveReport(
-                    BuildReport2_CountByChair(db),
-                    Path.Combine(reportsDir, "report_count_by_chair.txt"));
-                Pause();
-                break;
-
-            case "3":
-                ShowAndMaybeSaveReport(
-                    BuildReport3_AvgPublicationsByChair(db),
-                    Path.Combine(reportsDir, "report_avg_publications_by_chair.txt"));
-                Pause();
-                break;
-
-            case "0":
-                break;
-
-            default:
-                Console.WriteLine("Неверный пункт.");
-                Pause();
-                break;
+            case "1": Report1_TeachersWithChairs(db); break;
+            case "2": Report2_CountByChair(db); break;
+            case "3": Report3_AvgPublicationsByChair(db); break;
+            case "0": break;
+            default: Console.WriteLine("Неверный пункт."); break;
         }
+
+        Console.WriteLine();
     }
     while (choice != "0");
 }
 
-static ReportBuilder BuildReport1_TeachersWithChairs(DatabaseManager db)
+static void Report1_TeachersWithChairs(DatabaseManager db)
 {
-    return new ReportBuilder(db)
+    new ReportBuilder(db)
         .Query(@"SELECT t.teacher_name, c.chair_name, t.publications
 FROM teacher t
 JOIN chair c ON t.chair_id = c.chair_id
 ORDER BY t.teacher_name")
         .Title("Преподаватели по кафедрам")
         .Header("Имя", "Кафедра", "Публикации")
-        .ColumnWidths(24, 34, 14)
+        .ColumnWidths(24, 28, 14)
         .Numbered()
-        .Footer("Всего записей");
+        .Footer("Всего записей")
+        .Print();
 }
 
-static ReportBuilder BuildReport2_CountByChair(DatabaseManager db)
+static void Report2_CountByChair(DatabaseManager db)
 {
-    return new ReportBuilder(db)
-        .Query(@"SELECT c.chair_name, COUNT(t.teacher_id) AS cnt
-FROM chair c
-LEFT JOIN teacher t ON t.chair_id = c.chair_id
+    new ReportBuilder(db)
+        .Query(@"SELECT c.chair_name, COUNT(*) AS cnt
+FROM teacher t
+JOIN chair c ON t.chair_id = c.chair_id
 GROUP BY c.chair_name
 ORDER BY c.chair_name")
         .Title("Количество преподавателей по кафедрам")
         .Header("Кафедра", "Кол-во")
-        .ColumnWidths(34, 10)
-        .Footer("Всего строк");
+        .ColumnWidths(28, 10)
+        .Print();
 }
 
-static ReportBuilder BuildReport3_AvgPublicationsByChair(DatabaseManager db)
+static void Report3_AvgPublicationsByChair(DatabaseManager db)
 {
-    return new ReportBuilder(db)
+    new ReportBuilder(db)
         .Query(@"SELECT c.chair_name,
-ROUND(AVG(COALESCE(t.publications, 0)), 1) AS avg_publications
-FROM chair c
-LEFT JOIN teacher t ON t.chair_id = c.chair_id
+ROUND(AVG(t.publications), 1) AS avg_publications
+FROM teacher t
+JOIN chair c ON t.chair_id = c.chair_id
 GROUP BY c.chair_name
-ORDER BY avg_publications DESC, c.chair_name")
+ORDER BY avg_publications DESC")
         .Title("Среднее количество публикаций по кафедрам")
         .Header("Кафедра", "Среднее публикаций")
-        .ColumnWidths(34, 20)
-        .Footer("Всего строк");
-}
-
-static void ShowAndMaybeSaveReport(ReportBuilder report, string filePath)
-{
-    report.Print();
-    Console.WriteLine();
-    Console.Write("Сохранить отчёт в файл? (да/нет): ");
-    string save = (Console.ReadLine() ?? string.Empty).Trim().ToLowerInvariant();
-
-    if (save == "да")
-        report.SaveToFile(filePath);
+        .ColumnWidths(28, 20)
+        .Print();
 }
 
 static void FilterByChair(DatabaseManager db)
 {
     Console.WriteLine("--- Фильтр по кафедре ---");
-    PrintChairsForSelection(db);
+    Console.WriteLine("Доступные кафедры:");
+    var chairs = db.GetAllChairs();
+    foreach (var chair in chairs)
+        Console.WriteLine(" " + chair);
 
-    int chairId = ReadInt("Введите ID кафедры: ");
-    var chair = db.GetChairById(chairId);
-
-    if (chair is null)
+    Console.Write("Введите ID кафедры: ");
+    if (!int.TryParse(Console.ReadLine(), out int chairId))
     {
-        Console.WriteLine("Кафедра с таким ID не найдена.");
+        Console.WriteLine("Ошибка: введите целое число.");
         return;
     }
 
     var teachers = db.GetTeachersByChair(chairId);
-    Console.WriteLine($"\nПреподаватели кафедры \"{chair.Name}\":");
-
     if (teachers.Count == 0)
     {
         Console.WriteLine("На этой кафедре нет преподавателей.");
         return;
     }
 
+    Console.WriteLine($"\nПреподаватели кафедры #{chairId}:");
     foreach (var teacher in teachers)
         Console.WriteLine(" " + teacher);
-
     Console.WriteLine($"Итого: {teachers.Count}");
 }
 
 static void ExportCsv(DatabaseManager db)
 {
-    string baseDir = AppContext.BaseDirectory;
-    string chairPath = Path.Combine(baseDir, "chair_export.csv");
-    string teacherPath = Path.Combine(baseDir, "teacher_export.csv");
-
+    string chairPath = Path.Combine(AppContext.BaseDirectory, "chair_export.csv");
+    string teacherPath = Path.Combine(AppContext.BaseDirectory, "teacher_export.csv");
     db.ExportToCsv(chairPath, teacherPath);
     Console.WriteLine($"Кафедры экспортированы в: {chairPath}");
     Console.WriteLine($"Преподаватели экспортированы в: {teacherPath}");
-}
-
-static void PrintChairsForSelection(DatabaseManager db)
-{
-    Console.WriteLine("Доступные кафедры:");
-    var chairs = db.GetAllChairs();
-
-    if (chairs.Count == 0)
-    {
-        Console.WriteLine(" Справочник кафедр пуст.");
-        return;
-    }
-
-    foreach (var chair in chairs)
-        Console.WriteLine(" " + chair);
-}
-
-static int ReadInt(string prompt, int? minValue = null)
-{
-    while (true)
-    {
-        Console.Write(prompt);
-        string input = Console.ReadLine()?.Trim() ?? string.Empty;
-
-        if (!int.TryParse(input, out int value))
-        {
-            Console.WriteLine("Ошибка: введите целое число.");
-            continue;
-        }
-
-        if (minValue.HasValue && value < minValue.Value)
-        {
-            Console.WriteLine($"Ошибка: число должно быть не меньше {minValue.Value}.");
-            continue;
-        }
-
-        return value;
-    }
-}
-
-static string ReadRequiredString(string prompt)
-{
-    while (true)
-    {
-        Console.Write(prompt);
-        string input = Console.ReadLine()?.Trim() ?? string.Empty;
-
-        if (!string.IsNullOrWhiteSpace(input))
-            return input;
-
-        Console.WriteLine("Ошибка: поле не может быть пустым.");
-    }
-}
-
-static void Pause()
-{
-    Console.WriteLine();
-    Console.Write("Нажмите любую клавишу, чтобы продолжить...");
-    Console.ReadKey(true);
 }
