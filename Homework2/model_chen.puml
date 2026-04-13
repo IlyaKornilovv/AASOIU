@@ -1,11 +1,11 @@
 @startchen
-entity Кафедра {
+entity "Кафедра" as chair {
   * chair_id : int
   --
   chair_name : string
 }
 
-entity Преподаватель {
+entity "Преподаватель" as teacher {
   * teacher_id : int
   --
   chair_id : int
@@ -13,5 +13,5 @@ entity Преподаватель {
   publications : int
 }
 
-Кафедра ||--o{ Преподаватель : включает
+chair ||--o{ teacher : включает
 @endchen

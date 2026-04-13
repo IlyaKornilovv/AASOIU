@@ -1,7 +1,7 @@
 /// <summary>
 /// Преподаватель (основная таблица, сторона «много»)
 /// </summary>
-class Teacher
+public class Teacher
 {
     /// <summary>Идентификатор преподавателя</summary>
     public int Id { get; set; }
@@ -9,7 +9,7 @@ class Teacher
     /// <summary>Идентификатор кафедры (внешний ключ)</summary>
     public int ChairId { get; set; }
 
-    /// <summary>Имя преподавателя</summary>
+    /// <summary>ФИО преподавателя</summary>
     public string Name { get; set; }
 
     private int _publications;
@@ -23,7 +23,7 @@ class Teacher
         set
         {
             if (value < 0)
-                throw new ArgumentException("Количество публикаций не может быть отрицательным");
+                throw new ArgumentException("Количество публикаций не может быть отрицательным.");
             _publications = value;
         }
     }
@@ -38,7 +38,7 @@ class Teacher
     }
 
     /// <summary>Конструктор по умолчанию</summary>
-    public Teacher() : this(0, 0, "", 0) { }
+    public Teacher() : this(0, 0, string.Empty, 0) { }
 
     public override string ToString()
         => $"[{Id}] {Name}, кафедра #{ChairId}, публикаций: {Publications}";

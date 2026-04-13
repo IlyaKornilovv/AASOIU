@@ -1,7 +1,7 @@
 /// <summary>
 /// Кафедра (справочная таблица, сторона «один»)
 /// </summary>
-class Chair
+public class Chair
 {
     /// <summary>Идентификатор кафедры</summary>
     public int Id { get; set; }
@@ -17,7 +17,7 @@ class Chair
     }
 
     /// <summary>Конструктор по умолчанию</summary>
-    public Chair() : this(0, "") { }
+    public Chair() : this(0, string.Empty) { }
 
     public override string ToString() => $"[{Id}] {Name}";
 }
