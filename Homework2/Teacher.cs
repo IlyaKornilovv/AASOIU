@@ -1,7 +1,7 @@
 /// <summary>
 /// Преподаватель (основная таблица, сторона «много»)
 /// </summary>
-class Teacher
+internal class Teacher
 {
     /// <summary>Идентификатор преподавателя</summary>
     public int Id { get; set; }

@@ -4,7 +4,7 @@ using Microsoft.Data.Sqlite;
 /// Управление базой данных SQLite.
 /// Инкапсулирует операции: создание таблиц, импорт CSV, CRUD и выполнение запросов для отчётов.
 /// </summary>
-class DatabaseManager
+internal class DatabaseManager
 {
     private readonly string _connectionString;
 

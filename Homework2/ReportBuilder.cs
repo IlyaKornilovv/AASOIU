@@ -3,7 +3,7 @@ using System.Text;
 /// <summary>
 /// Построитель отчётов с использованием паттерна Fluent Interface.
 /// </summary>
-class ReportBuilder
+internal class ReportBuilder
 {
     private readonly DatabaseManager _db;
 

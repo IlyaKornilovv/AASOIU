@@ -1,7 +1,7 @@
 /// <summary>
 /// Кафедра (справочная таблица, сторона «один»)
 /// </summary>
-class Chair
+internal class Chair
 {
     /// <summary>Идентификатор кафедры</summary>
     public int Id { get; set; }
