@@ -1,0 +1,17 @@
+@startchen
+entity Кафедра {
+  * chair_id : int
+  --
+  chair_name : string
+}
+
+entity Преподаватель {
+  * teacher_id : int
+  --
+  chair_id : int
+  teacher_name : string
+  publications : int
+}
+
+Кафедра ||--o{ Преподаватель : включает
+@endchen

@@ -1,0 +1,17 @@
+@startuml
+entity "Chair" as chair {
+  * chair_id : int <<PK>>
+  --
+  chair_name : string
+}
+
+entity "Teacher" as teacher {
+  * teacher_id : int <<PK>>
+  --
+  chair_id : int <<FK>>
+  teacher_name : string
+  publications : int [>= 0]
+}
+
+chair ||--o{ teacher : chair_id
+@enduml
