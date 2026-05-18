@@ -2,4 +2,7 @@
   <Project Path="AASOIU_main/AASOIU_main.csproj" />
   <Project Path="homework1/homework1.csproj" Id="0bd15973-db02-4fb8-83e4-745c70c9e9fa" />
   <Project Path="Homework2.0/Homework2.0.csproj" Id="b759c4a4-9635-428a-8530-9dc468109316" />
+  <Project Path="sem1/sem1.csproj" Id="ed320272-d86d-459b-b94d-92e12746ee63" />
+  <Project Path="sem2/sem2.csproj" Id="2fe96c0a-ed0f-4ba2-8700-a40dcc787d4e" />
+  <Project Path="sem3/sem3.csproj" Id="92959751-ad4d-4d7b-a101-db5af4eb3943" />
 </Solution>
