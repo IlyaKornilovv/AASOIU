@@ -1,0 +1,6 @@
+bin/
+obj/
+.vs/
+*.user
+*.suo
+homework3_variant18.db

@@ -1,0 +1,22 @@
+@{
+    ViewData["Title"] = "Главная";
+}
+<section class="hero">
+    <p class="eyebrow">Домашнее задание №3</p>
+    <h1>Кафедры и преподаватели</h1>
+    <p>Вариант 18: учёт количества научных публикаций преподавателей по кафедрам.</p>
+</section>
+<section class="cards">
+    <a class="card" asp-controller="Departments" asp-action="Index">
+        <h2>Кафедры</h2>
+        <p>Просмотр и редактирование справочника кафедр. Удаление запрещено при наличии связанных преподавателей.</p>
+    </a>
+    <a class="card" asp-controller="Teachers" asp-action="Index">
+        <h2>Преподаватели</h2>
+        <p>CRUD-операции, выбор кафедры из списка и проверка количества публикаций.</p>
+    </a>
+    <a class="card" asp-controller="Reports" asp-action="Index">
+        <h2>Отчёт</h2>
+        <p>Полный список, количество преподавателей и среднее число публикаций по кафедрам.</p>
+    </a>
+</section>

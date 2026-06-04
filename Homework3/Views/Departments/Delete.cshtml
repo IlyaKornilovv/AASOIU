@@ -1,0 +1,23 @@
+@model Department
+@{
+    ViewData["Title"] = "Удаление кафедры";
+    bool hasTeachers = ViewBag.HasTeachers is true;
+}
+<h1>Удаление кафедры</h1>
+<div class="form-card">
+    <p>Кафедра: <strong>@Model.Name</strong></p>
+    @if (hasTeachers)
+    {
+        <div class="alert error">Удаление запрещено: у кафедры есть связанные преподаватели. Сначала удалите или перенесите их.</div>
+        <a class="button" asp-action="Index">Вернуться к списку</a>
+    }
+    else
+    {
+        <p>Подтвердите удаление записи.</p>
+        <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+            <input asp-for="Id" type="hidden" />
+            <button class="button danger" type="submit">Удалить</button>
+            <a class="button" asp-action="Index">Отмена</a>
+        </form>
+    }
+</div>

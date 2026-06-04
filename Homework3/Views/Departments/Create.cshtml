@@ -1,0 +1,15 @@
+@model Department
+@{
+    ViewData["Title"] = "Добавление кафедры";
+}
+<h1>Добавление кафедры</h1>
+<form asp-action="Create" method="post" class="form-card">
+    <div asp-validation-summary="ModelOnly" class="validation"></div>
+    <label asp-for="Name"></label>
+    <input asp-for="Name" />
+    <span asp-validation-for="Name" class="validation"></span>
+    <div class="form-actions">
+        <button class="button primary" type="submit">Сохранить</button>
+        <a class="button" asp-action="Index">Отмена</a>
+    </div>
+</form>

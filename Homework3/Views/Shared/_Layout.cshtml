@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — ДЗ №3, вариант 18</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+<header>
+    <div class="container nav-wrap">
+        <a class="brand" asp-controller="Home" asp-action="Index">ДЗ №3 · вариант 18</a>
+        <nav>
+            <a asp-controller="Home" asp-action="Index">Главная</a>
+            <a asp-controller="Departments" asp-action="Index">Кафедры</a>
+            <a asp-controller="Teachers" asp-action="Index">Преподаватели</a>
+            <a asp-controller="Reports" asp-action="Index">Отчёт</a>
+        </nav>
+    </div>
+</header>
+<main class="container">
+    @RenderBody()
+</main>
+<footer>
+    <div class="container">ASP.NET Core MVC · Entity Framework Core · SQLite · LINQ</div>
+</footer>
+</body>
+</html>
