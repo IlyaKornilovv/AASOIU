@@ -6,6 +6,7 @@
     <Project Path="../../../../OneDrive/Desktop/Seminar7Solution/tests/Seminar7.NUnit.Tests/Seminar7.NUnit.Tests.csproj" />
     <Project Path="../../../../OneDrive/Desktop/Seminar7Solution/tests/Seminar7.XUnit.Tests/Seminar7.XUnit.Tests.csproj" />
   </Folder>
+  <Project Path="../../Homework3_Variant18/Homework3.Variant18.csproj" />
   <Project Path="AASOIU_main/AASOIU_main.csproj" />
   <Project Path="homework1/homework1.csproj" Id="0bd15973-db02-4fb8-83e4-745c70c9e9fa" />
   <Project Path="Homework2.0/Homework2.0.csproj" Id="b759c4a4-9635-428a-8530-9dc468109316" />

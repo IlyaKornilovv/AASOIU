@@ -1,6 +1,4 @@
-/// <summary>
-/// Преподаватель (основная таблица, сторона «много»)
-/// </summary>
+
 internal class Teacher
 {
     /// <summary>Идентификатор преподавателя</summary>
