@@ -1,20 +1,17 @@
 
 internal class Teacher
 {
-    /// <summary>Идентификатор преподавателя</summary>
+    
     public int Id { get; set; }
 
-    /// <summary>Идентификатор кафедры (внешний ключ)</summary>
+    
     public int ChairId { get; set; }
 
-    /// <summary>Имя преподавателя</summary>
+    
     public string Name { get; set; }
 
     private int _publications;
 
-    /// <summary>
-    /// Количество научных публикаций (не может быть отрицательным)
-    /// </summary>
     public int Publications
     {
         get => _publications;
@@ -26,7 +23,7 @@ internal class Teacher
         }
     }
 
-    /// <summary>Конструктор с параметрами</summary>
+    
     public Teacher(int id, int chairId, string name, int publications)
     {
         Id = id;
@@ -35,7 +32,7 @@ internal class Teacher
         Publications = publications;
     }
 
-    /// <summary>Конструктор по умолчанию</summary>
+   
     public Teacher() : this(0, 0, "", 0) { }
 
     public override string ToString()
